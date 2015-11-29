@@ -1,13 +1,14 @@
 package com.ezsofe.tingweiprototype;
 
 import android.app.Activity;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.parse.ParseUser;
 
 
 /**
@@ -59,19 +60,19 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onLogoutButtonPressed(View view) {
+        ParseUser.logOut();
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onLogout();
         }
     }
 
@@ -84,6 +85,9 @@ public class HomeFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        TextView tv = (TextView) getView().findViewById(R.id.textView);
+        tv.setText("Hello " + ParseUser.getCurrentUser().getUsername());
     }
 
     @Override
@@ -103,7 +107,8 @@ public class HomeFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onLogoutButtonPressed(View view);
+
+        void onLogout();
     }
 }

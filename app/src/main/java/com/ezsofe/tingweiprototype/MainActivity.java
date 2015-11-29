@@ -1,7 +1,6 @@
 package com.ezsofe.tingweiprototype;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -49,11 +48,7 @@ public class MainActivity extends ActionBarActivity
 
         Fragment fragment = null;
         if (position == 0) {
-            if (ParseUser.getCurrentUser() != null) {
-                fragment = HomeFragment.newInstance("", "");
-            } else {
-                fragment = LoginFragment.newInstance("", "");
-            }
+            fragment = getHomeFragment();
         } else {
             fragment = PlaceholderFragment.newInstance(position + 1);
         }
@@ -85,8 +80,69 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onLoginButtonPressed(View view) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        LoginFragment fragment = (LoginFragment) fragmentManager.findFragmentById(R.id.container);
+        fragment.onLoginButtonPressed(view);
+    }
 
+    @Override
+    public void onRegisterButtonPressed(View view) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        LoginFragment fragment = (LoginFragment) fragmentManager.findFragmentById(R.id.container);
+        fragment.onRegisterButtonPressed(view);
+    }
+
+    @Override
+    public void onLogin(boolean passed) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Fragment fragment = getHomeFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }
+
+    @Override
+    public void onRegister(boolean passed) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Fragment fragment = getHomeFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }
+
+    private Fragment getHomeFragment() {
+
+        Fragment fragment = null;
+        if (ParseUser.getCurrentUser() != null) {
+            fragment = HomeFragment.newInstance("", "");
+        } else {
+            fragment = LoginFragment.newInstance();
+        }
+
+        return fragment;
+    }
+
+    @Override
+    public void onLogoutButtonPressed(View view) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        HomeFragment fragment = (HomeFragment) fragmentManager.findFragmentById(R.id.container);
+        fragment.onLogoutButtonPressed(view);
+    }
+
+    @Override
+    public void onLogout() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Fragment fragment = getHomeFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
     }
 
     /**
@@ -99,6 +155,9 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        public PlaceholderFragment() {
+        }
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -109,9 +168,6 @@ public class MainActivity extends ActionBarActivity
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
-        }
-
-        public PlaceholderFragment() {
         }
 
         @Override

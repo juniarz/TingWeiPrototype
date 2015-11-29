@@ -1,13 +1,16 @@
 package com.ezsofe.tingweiprototype;
 
 import android.app.Activity;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 
 /**
@@ -32,7 +35,6 @@ public class LoginFragment extends Fragment {
      *
      * @return A new instance of fragment LoginFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         return fragment;
@@ -50,9 +52,48 @@ public class LoginFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
-    public void onLoginButtonPressed() {
-        if (mListener != null) {
-            mListener.onLogin();
+    public void onRegisterButtonPressed(View view) {
+        EditText username_et = (EditText) getView().findViewById(R.id.register_user_et);
+        EditText email_et = (EditText) getView().findViewById(R.id.register_email_et);
+        EditText password_et = (EditText) getView().findViewById(R.id.register_password_et);
+
+        ParseUser newUser = new ParseUser();
+        newUser.setUsername(username_et.getText().toString());
+        newUser.setPassword(password_et.getText().toString());
+        newUser.setEmail(email_et.getText().toString());
+
+        try {
+            newUser.signUp();
+
+            if (mListener != null) {
+                mListener.onRegister(true);
+            }
+        } catch (ParseException e) {
+            Toast.makeText(getActivity(), "Failed to signup user! " + e.getMessage(), Toast.LENGTH_LONG);
+
+            if (mListener != null) {
+                mListener.onRegister(false);
+            }
+        }
+
+    }
+
+    public void onLoginButtonPressed(View view) {
+        EditText username_et = (EditText) getView().findViewById(R.id.login_user_et);
+        EditText password_et = (EditText) getView().findViewById(R.id.login_password_et);
+
+        try {
+            if (ParseUser.logIn(username_et.getText().toString(), password_et.getText().toString()) != null) {
+                if (mListener != null) {
+                    mListener.onLogin(true);
+                }
+            }
+        } catch (ParseException e) {
+            Toast.makeText(getActivity(), "Failed to login user! " + e.getMessage(), Toast.LENGTH_LONG);
+
+            if (mListener != null) {
+                mListener.onLogin(false);
+            }
         }
     }
 
@@ -84,6 +125,12 @@ public class LoginFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onLogin();
+        void onLoginButtonPressed(View view);
+
+        void onRegisterButtonPressed(View view);
+
+        void onLogin(boolean passed);
+
+        void onRegister(boolean passed);
     }
 }
